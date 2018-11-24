@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1543074704 source:d:\program files\codeblocks\projets\linterc\main.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+

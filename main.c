@@ -6,7 +6,6 @@
 #define CARRIAGERETURN '\n'
 #define SPACE ' '
 #define COMMA ','
-
 void arrayBracketEol();
 void operatorsSpacing();
 int main()

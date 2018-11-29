@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1541762377 source:c:\documents\projet\linter c\linter\main.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+
+1543507482 source:c:\users\cazenavel\documents\projet\linter c\linter\main.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+

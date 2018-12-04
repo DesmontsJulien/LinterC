@@ -16,13 +16,15 @@ int main()
 
     arrayBracketEol();
     printf("\n");
-    operatorsSpacing();
+    //operatorsSpacing();
     printf("\n");
-    commaSpacing();
+    //commaSpacing();
     printf("\n");
     commentsHeader();
     printf("\n");
     maxLineNumbers(60);
+    printf("\n");
+    noMultiDeclaration();
     return 0;
 }
 
@@ -88,7 +90,6 @@ void operatorsSpacing()
             {
                 numLine++;
             }
-
 
             caractereActuel = fgetc(fichier);
             if(43==caractereActuel || 42==caractereActuel || 47==caractereActuel || 45==caractereActuel || 61==caractereActuel || 63==caractereActuel || 58==caractereActuel)
@@ -258,129 +259,160 @@ void  noMultiDeclaration()
     fichier = fopen("test.c","rb");
     char a;
     char buffVar;
+    int i=0;
     int numLine=1;
     int checkCR=0;
     int fileSize=0;
     int nbCarac=0;
-    char buffer[10000];
+    char *buffer;
+
     if (fichier != NULL)
     {
-       /* do
+        do
         {
-            a=fgetc(fichier);
-            nbCarac++;
+            fgetc(fichier);
+            fileSize++;
         }
         while (!feof(fichier));
-         fileSize=nbCarac;
-        char buffer[fileSize];
-        printf("%d",fileSize);
-*/
-        do{
 
-            for(int i=0; i<10000; i++) //On fait un buffer sous forme de chaques caractères pour enregistrer chaques lignes
+        buffer = malloc(sizeof(char) * fileSize);
+        fseek(fichier, 0, SEEK_SET);
+
+        do
+        {
+            buffer[i] = fgetc(fichier);
+            i++;
+        }
+        while (!feof(fichier));
+
+
+        for(int i=0; i< fileSize; i++)  //On fait un buffer sous forme de chaques caractères pour enregistrer chaques lignes
+        {
+
+            //Debut du process pour trouver les types de variables
+            if('t'==buffer[i] && 'r'==buffer[i-1] && 'o'==buffer[i-2] && 'h'==buffer[i-3] && 's'==buffer[i-4] && (' '==buffer[i-5] || CARRIAGERETURN==buffer[i-5]))
             {
-                buffer[i]=fgetc(fichier);
-
-
-                if(CARRIAGERETURN==buffer[i]){
-                    numLine++;
-                }
-                 //printf("%c",buffer[i]);
-                //Debut du process pour trouver les types de variables
-                if('t'==buffer[i] && 'r'==buffer[i-1] && 'o'==buffer[i-2] && 'h'==buffer[i-3] && 's'==buffer[i-4] && (' '==buffer[i-5] || CARRIAGERETURN==buffer[i-5]))
+                while (CARRIAGERETURN != buffer[i])
                 {
-                    for(int y=3;y<33;y++){
-                        if(CARRIAGERETURN==buffer[i+y])
-                            checkCR=1;
+                    if(';'==buffer[i] || '('==buffer[i])
+                    {
+                        checkCR=1;
 
-                        if (','==buffer[i+y] && checkCR==0)
-                            printf("no-multi-declaration error line %d",numLine);
-
-                        checkCR=0;
                     }
+                    if (','==buffer[i] && checkCR==0)
+                    {
+                        printf("no-multi-declaration error line %d\n",numLine);
+                    }
+                    i++;
                 }
+                checkCR=0;
+            }
 
 
-                if('e'==buffer[i] && 'l'==buffer[i-1] && 'b'==buffer[i-2] && 'u'==buffer[i-3] && 'o'==buffer[i] && 'd'==buffer[i-5] && (' '==buffer[i-6] || CARRIAGERETURN==buffer[i-6]))
+            if('e'==buffer[i] && 'l'==buffer[i-1] && 'b'==buffer[i-2] && 'u'==buffer[i-3] && 'o'==buffer[i] && 'd'==buffer[i-5] && (' '==buffer[i-6] || CARRIAGERETURN==buffer[i-6]))
+            {
+
+                while (CARRIAGERETURN != buffer[i])
                 {
+                    if(';'==buffer[i] || '('==buffer[i])
+                    {
+                        checkCR=1;
 
-                    for(int y=3;y<33;y++){
-                        if(CARRIAGERETURN==buffer[i+y])
-                            checkCR=1;
-
-                        if (','==buffer[i+y] && checkCR==0)
-                            printf("no-multi-declaration error line %d",numLine);
-
-                        checkCR=0;
                     }
+                    if (','==buffer[i] && checkCR==0)
+                    {
+                        printf("no-multi-declaration error line %d\n",numLine);
+                    }
+                    i++;
                 }
+                checkCR=0;
+            }
 
 
-                if('t'==buffer[i] && 'n'==buffer[i-1] && 'i'==buffer[i-2] && (' '==buffer[i-3] || CARRIAGERETURN==buffer[i-3]))
+            if('t'==buffer[i] && 'n'==buffer[i-1] && 'i'==buffer[i-2] && (' '==buffer[i-3] || CARRIAGERETURN==buffer[i-3]))
+            {
+                while (CARRIAGERETURN != buffer[i])
                 {
-                    for(int y=2;y<32;y++){
-                        if(CARRIAGERETURN==buffer[i+y] || '('==buffer[i+y]){
-                            checkCR=1;
-                        }
+                    if(';'==buffer[i] || '('==buffer[i])
+                    {
+                        checkCR=1;
 
-                        if (','==buffer[i+y] && checkCR==0){
-                            printf("no-multi-declaration error line %d",numLine);
-                        }
                     }
-                    checkCR=0;
-
-                }
-
-
-                if('t'==buffer[i] && 'a'==buffer[i-1] && 'o'==buffer[i-2] && 'l'==buffer[i-3] && 'f'==buffer[i-4] && (' '==buffer[i-5] || CARRIAGERETURN==buffer[i-5]))
-                {
-                    for(int y=3;y<33;y++){
-                        if(CARRIAGERETURN==buffer[i+y])
-                            checkCR=1;
-
-                        if (','==buffer[i+y] && checkCR==0)
-                            printf("no-multi-declaration error line %d",numLine);
-
-                        checkCR=0;
+                    if (','==buffer[i] && checkCR==0)
+                    {
+                        printf("no-multi-declaration error line %d\n",numLine);
                     }
+                    i++;
                 }
-
-
-                if('r'==buffer[i] && 'a'==buffer[i-1] && 'h'==buffer[i-2] && 'c'==buffer[i-3] && (' '==buffer[i-4] || CARRIAGERETURN==buffer[i-4]))
-                {
-
-                    for(int y=3;y<33;y++){
-                        if(CARRIAGERETURN==buffer[i+y])
-                            checkCR=1;
-
-                        if (','==buffer[i+y] && checkCR==0)
-                            printf("no-multi-declaration error line %d",numLine);
-
-                        checkCR=0;
-                    }
-                }
-
-
-                if('n'==buffer[i] && 'a'==buffer[i-1] && 'e'==buffer[i-2] && 'l'==buffer[i-3] && 'o'==buffer[i-4] && 'o'==buffer[i-5] && 'b'==buffer[i-6] && (' '==buffer[i-7] || CARRIAGERETURN==buffer[i-7]))
-                {
-                    for(int y=3;y<33;y++){
-                        if(CARRIAGERETURN==buffer[i+y])
-                            checkCR=1;
-
-                        if (','==buffer[i+y] && checkCR==0)
-                            printf("no-multi-declaration error line %d",numLine);
-
-                        checkCR=0;
-                    }
-                }
-
-
+                checkCR=0;
 
             }
 
-        }
 
-        while (!feof(fichier));
+            if('t'==buffer[i] && 'a'==buffer[i-1] && 'o'==buffer[i-2] && 'l'==buffer[i-3] && 'f'==buffer[i-4] && (' '==buffer[i-5] || CARRIAGERETURN==buffer[i-5]))
+            {
+                while (CARRIAGERETURN != buffer[i])
+                {
+                    if(';'==buffer[i] || '('==buffer[i])
+                    {
+                        checkCR=1;
+
+                    }
+                    if (','==buffer[i] && checkCR==0)
+                    {
+                        printf("no-multi-declaration error line %d\n",numLine);
+                    }
+                    i++;
+                }
+                checkCR=0;
+            }
+
+
+            if('r'==buffer[i] && 'a'==buffer[i-1] && 'h'==buffer[i-2] && 'c'==buffer[i-3] && (' '==buffer[i-4] || CARRIAGERETURN==buffer[i-4]))
+            {
+
+                while (CARRIAGERETURN != buffer[i])
+                {
+                    if(';'==buffer[i] || '('==buffer[i])
+                    {
+                        checkCR=1;
+
+                    }
+                    if (','==buffer[i] && checkCR==0)
+                    {
+                        printf("no-multi-declaration error line %d\n",numLine);
+                    }
+                    i++;
+                }
+                checkCR=0;
+            }
+
+
+            if('n'==buffer[i] && 'a'==buffer[i-1] && 'e'==buffer[i-2] && 'l'==buffer[i-3] && 'o'==buffer[i-4] && 'o'==buffer[i-5] && 'b'==buffer[i-6] && (' '==buffer[i-7] || CARRIAGERETURN==buffer[i-7]))
+            {
+                while (CARRIAGERETURN != buffer[i])
+                {
+                    if(';'==buffer[i] || '('==buffer[i])
+                    {
+                        checkCR=1;
+
+                    }
+                    if (','==buffer[i] && checkCR==0)
+                    {
+                        printf("no-multi-declaration error line %d\n",numLine);
+                    }
+                    i++;
+                }
+                numLine++;
+                checkCR=0;
+            }
+
+            if(CARRIAGERETURN==buffer[i])
+            {
+                numLine++;
+            }
+
+        }
     }
     else
     {

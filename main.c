@@ -8,18 +8,21 @@
 
 void arrayBracketEol();
 void operatorsSpacing();
+void commentsHeader();
+void maxLineNumbers(int n);
 void noMultiDeclaration();
 int main()
 {
 
-    //arrayBracketEol();
+    arrayBracketEol();
     printf("\n");
-    //operatorsSpacing();
+    operatorsSpacing();
     printf("\n");
-    //commaSpacing();
+    commaSpacing();
     printf("\n");
-    noMultiDeclaration();
-
+    commentsHeader();
+    printf("\n");
+    maxLineNumbers(60);
     return 0;
 }
 
@@ -29,8 +32,8 @@ void arrayBracketEol()
     FILE *fichier;
     fichier=NULL;
     fichier = fopen("test.c","rb");
-    char caractereActuel='0';
-    char caractereBuff='0';
+    char caractereActuel;
+    char caractereBuff;
     int numLine=1;
     if (fichier != NULL)
     {
@@ -58,7 +61,7 @@ void arrayBracketEol()
     }
     else
     {
-        printf("Impossible d'ouvrir le fichier test.c");
+        printf("Impossible d'ouvrir le fichier test.txt");
 
     }
     fclose(fichier);
@@ -85,12 +88,16 @@ void operatorsSpacing()
             {
                 numLine++;
             }
+
+
             caractereActuel = fgetc(fichier);
             if(43==caractereActuel || 42==caractereActuel || 47==caractereActuel || 45==caractereActuel || 61==caractereActuel || 63==caractereActuel || 58==caractereActuel)
             {
                 fseek(fichier, -1, SEEK_CUR );
+
                 prevChar=fgetc(fichier);
                 fseek(fichier, 2, SEEK_CUR);
+                fseek(fichier, -1, SEEK_CUR );
                 nextChar=fgetc(fichier);
                 if(prevChar!=SPACE ||nextChar!=SPACE)
                 {
@@ -106,6 +113,7 @@ void operatorsSpacing()
         printf("Impossible d'ouvrir le fichier test.txt");
 
     }
+
     fclose(fichier);
 
 
@@ -151,10 +159,96 @@ void commaSpacing()
     }
     fclose(fichier);
 
+}
+
+void commentsHeader()
+{
+    FILE *fichier;
+    fichier=NULL;
+    fichier = fopen("test.c","rb");
+    char caractereActuel;
+    char caractereBuff;
+    int numLine=1;
+    if (fichier != NULL)
+    {
+        do
+        {
+            caractereActuel = fgetc(fichier); // On lit le caractère
+            if(CARRIAGERETURN==caractereActuel)
+            {
+                numLine++;
+            }
+            if(numLine<6)
+            {
+
+                if('*'==caractereActuel)
+                {
+                    if ('/'==caractereBuff)
+                    {
+                        printf("comments header on top  line %d\n",numLine);
+                    }
+                }
+
+            }
+
+
+            caractereBuff = caractereActuel;
+
+        }
+        while (!feof(fichier));
+    }
+    else
+    {
+        printf("Impossible d'ouvrir le fichier test.txt");
+
+    }
+    fclose(fichier);
 
 }
 
+void maxLineNumbers(int n)
+{
+    FILE *fichier;
+    fichier=NULL;
+    fichier = fopen("test.c","rb");
+    char caractereActuel;
+    char caractereBuff;
+    int numLine=1;
+    int nbCarac=0;
+    int reset=0;
+    if (fichier != NULL)
+    {
+        do
+        {
+            caractereActuel = fgetc(fichier); // On lit le caractère
+            if(CARRIAGERETURN==caractereActuel)
+            {
+                numLine++;
+                reset=0;
+            }
+            nbCarac++;
+            if (CARRIAGERETURN==caractereActuel)
+            {
+                nbCarac=0;
+            }
 
+            if(nbCarac>n && reset!=1)
+            {
+                printf("max-line-numbers error  line %d\n",numLine);
+                reset=1;
+            }
+        }
+        while (!feof(fichier));
+    }
+    else
+    {
+        printf("Impossible d'ouvrir le fichier test.txt");
+
+    }
+    fclose(fichier);
+
+
+}
 
 void  noMultiDeclaration()
 {
@@ -168,7 +262,7 @@ void  noMultiDeclaration()
     int checkCR=0;
     int fileSize=0;
     int nbCarac=0;
-    char buffer[6000];
+    char buffer[10000];
     if (fichier != NULL)
     {
        /* do
@@ -183,14 +277,15 @@ void  noMultiDeclaration()
 */
         do{
 
-            for(int i=0; i<6000; i++) //On fait un buffer sous forme de chaques caractères pour enregistrer chaques lignes
+            for(int i=0; i<10000; i++) //On fait un buffer sous forme de chaques caractères pour enregistrer chaques lignes
             {
                 buffer[i]=fgetc(fichier);
+
 
                 if(CARRIAGERETURN==buffer[i]){
                     numLine++;
                 }
-                //printf("%c",buffer[i]);
+                 //printf("%c",buffer[i]);
                 //Debut du process pour trouver les types de variables
                 if('t'==buffer[i] && 'r'==buffer[i-1] && 'o'==buffer[i-2] && 'h'==buffer[i-3] && 's'==buffer[i-4] && (' '==buffer[i-5] || CARRIAGERETURN==buffer[i-5]))
                 {
@@ -223,18 +318,16 @@ void  noMultiDeclaration()
 
                 if('t'==buffer[i] && 'n'==buffer[i-1] && 'i'==buffer[i-2] && (' '==buffer[i-3] || CARRIAGERETURN==buffer[i-3]))
                 {
-
-                    for(int y=3;y<33;y++){
-                        if(CARRIAGERETURN==buffer[i+y]){
+                    for(int y=2;y<32;y++){
+                        if(CARRIAGERETURN==buffer[i+y] || '('==buffer[i+y]){
                             checkCR=1;
                         }
 
                         if (','==buffer[i+y] && checkCR==0){
                             printf("no-multi-declaration error line %d",numLine);
                         }
-                        checkCR=0;
                     }
-
+                    checkCR=0;
 
                 }
 
@@ -297,3 +390,5 @@ void  noMultiDeclaration()
     printf("%d",numLine);
     fclose(fichier);
 }
+
+

@@ -9,6 +9,7 @@
 void arrayBracketEol();
 void operatorsSpacing();
 void noMultiDeclaration();
+int a,b;
 int main()
 {
 
